@@ -1,6 +1,6 @@
 use anyhow::bail;
 use std::env;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::{Read, Write};
 use std::path::Path;
 use std::process::Command;
@@ -96,6 +96,7 @@ fn main() -> anyhow::Result<()> {
 
     println!("Kernel source unpacked successfully");
 
+    let current_dir = env::current_dir()?;
     env::set_current_dir(file_name.trim_end_matches(".tar.xz"))?;
 
     println!("Compiling kernel...");
@@ -105,6 +106,11 @@ fn main() -> anyhow::Result<()> {
     let kernel_path = "arch/x86_64/boot/bzImage"; /* FIXME: arch independent */
 
     copy_file(kernel_path, "vmlinuz")?;
+
+    env::set_current_dir(current_dir)?;
+
+    fs::remove_file(file_name)?;
+    fs::remove_file(file_name.trim_end_matches(".tar.xz"))?;
 
     Ok(())
 }
