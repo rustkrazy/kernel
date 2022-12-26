@@ -112,8 +112,8 @@ fn main() -> anyhow::Result<()> {
         "vmlinuz",
     )?;
 
-    fs::remove_dir_all(file_name)?;
-    fs::remove_file(file_name.trim_end_matches(".tar.xz"))?;
+    fs::remove_file(file_name)?;
+    fs::remove_dir_all(file_name.trim_end_matches(".tar.xz"))?;
 
     Ok(())
 }
