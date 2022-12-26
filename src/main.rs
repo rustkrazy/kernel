@@ -8,9 +8,12 @@ use std::process::Command;
 const LATEST: &str = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.1.tar.xz";
 
 const CONFIG: &str = r#"
+CONFIG_BLK_DEV_INITRD=n
 CONFIG_SATA_AHCI=y
+CONFIG_SQUASHFS=y
 CONFIG_SQUASHFS_FILE_CACHE=y
 CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y
+CONFIG_SQUASHFS_ZLIB=y
 CONFIG_IPV6=y
 "#;
 
