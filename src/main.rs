@@ -52,6 +52,13 @@ fn compile() -> anyhow::Result<()> {
         file.write_all(CONFIG.as_bytes())?;
     }
 
+    let mut olddefconfig = Command::new("make");
+    olddefconfig.arg("olddefconfig");
+
+    if !olddefconfig.spawn()?.wait()?.success() {
+        bail!("make olddefconfig failed");
+    }
+
     let mut make = Command::new("make");
     make.arg("bzImage")
         .arg("modules")
