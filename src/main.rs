@@ -1,7 +1,7 @@
 use anyhow::bail;
 use std::env;
 use std::fs::{self, File};
-use std::io::{Read, Write};
+use std::io::prelude::*;
 use std::path::Path;
 use std::process::Command;
 
@@ -71,19 +71,6 @@ fn compile() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn copy_file<P: AsRef<Path>, Q: AsRef<Path>>(src: P, dst: Q) -> anyhow::Result<()> {
-    let mut outfile = File::create(dst)?;
-    let mut infile = File::open(src)?;
-
-    let mut buf = Vec::new();
-    infile.read_to_end(&mut buf)?;
-    outfile.write_all(&buf)?;
-
-    outfile.set_permissions(infile.metadata()?.permissions())?;
-
-    Ok(())
-}
-
 fn main() -> anyhow::Result<()> {
     let file_name = Path::new(LATEST).file_name().unwrap().to_str().unwrap();
 
@@ -109,7 +96,7 @@ fn main() -> anyhow::Result<()> {
 
     env::set_current_dir(current_dir)?;
 
-    copy_file(
+    fs::copy(
         Path::new(file_name.trim_end_matches(".tar.xz")).join(kernel_path),
         "vmlinuz",
     )?;
