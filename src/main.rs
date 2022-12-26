@@ -10,7 +10,7 @@ const LATEST: &str = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.1.t
 const CONFIG: &str = r#"
 CONFIG_SQUASHFS_FILE_CACHE=y
 CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y
-CONFIG_SQUASHFS_ZLIB=y
+CONFIG_SQUASHFS_ZSTD=y
 "#;
 
 fn download_kernel(file_name: &str) -> anyhow::Result<()> {
