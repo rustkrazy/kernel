@@ -105,11 +105,14 @@ fn main() -> anyhow::Result<()> {
 
     let kernel_path = "arch/x86_64/boot/bzImage"; /* FIXME: arch independent */
 
-    copy_file(kernel_path, "vmlinuz")?;
-
     env::set_current_dir(current_dir)?;
 
-    fs::remove_file(file_name)?;
+    copy_file(
+        Path::new(file_name.trim_end_matches(".tar.xz")).join(kernel_path),
+        "vmlinuz",
+    )?;
+
+    fs::remove_dir_all(file_name)?;
     fs::remove_file(file_name.trim_end_matches(".tar.xz"))?;
 
     Ok(())
