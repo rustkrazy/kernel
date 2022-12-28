@@ -1,1 +1,1 @@
-root=/dev/vda2
+root=/dev/vda2 init=/bin/init
