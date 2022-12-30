@@ -1,1 +1,1 @@
-root=1:2 init=/bin/init
+root=0:1 init=/bin/init
