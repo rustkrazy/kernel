@@ -1,4 +1,5 @@
 use anyhow::bail;
+use clap::Parser;
 use std::env;
 use std::fs::{self, File};
 use std::io::prelude::*;
@@ -14,6 +15,14 @@ CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y
 CONFIG_SQUASHFS_ZSTD=y
 "#;
 
+#[derive(Debug, Parser)]
+#[command(author = "The Rustkrazy Authors", version = "v0.1.0", about = "Build the rustkrazy kernel", long_about = None)]
+struct Args {
+    /// Output architecture.
+    #[arg(short = 'a', long = "architecture")]
+    arch: String,
+}
+
 fn download_kernel(file_name: &str) -> anyhow::Result<()> {
     println!("Downloading kernel source...");
 
@@ -27,16 +36,18 @@ fn download_kernel(file_name: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn compile() -> anyhow::Result<()> {
+fn compile(arch: &str) -> anyhow::Result<()> {
+    let arch_arg = format!("ARCH={}", arch);
+
     let mut defconfig = Command::new("make");
-    defconfig.arg("defconfig");
+    defconfig.arg(&arch_arg).arg("defconfig");
 
     if !defconfig.spawn()?.wait()?.success() {
         bail!("make defconfig failed");
     }
 
     let mut mod2noconfig = Command::new("make");
-    mod2noconfig.arg("mod2noconfig");
+    mod2noconfig.arg(&arch_arg).arg("mod2noconfig");
 
     if !mod2noconfig.spawn()?.wait()?.success() {
         bail!("make mod2noconfig failed");
@@ -53,14 +64,15 @@ fn compile() -> anyhow::Result<()> {
     }
 
     let mut olddefconfig = Command::new("make");
-    olddefconfig.arg("olddefconfig");
+    olddefconfig.arg(&arch_arg).arg("olddefconfig");
 
     if !olddefconfig.spawn()?.wait()?.success() {
         bail!("make olddefconfig failed");
     }
 
     let mut make = Command::new("make");
-    make.arg("bzImage")
+    make.arg(&arch_arg)
+        .arg("bzImage")
         .arg("modules")
         .arg("-j".to_owned() + &num_cpus::get().to_string());
 
@@ -72,6 +84,8 @@ fn compile() -> anyhow::Result<()> {
 }
 
 fn main() -> anyhow::Result<()> {
+    let args = Args::parse();
+
     let file_name = Path::new(LATEST).file_name().unwrap().to_str().unwrap();
 
     download_kernel(file_name)?;
@@ -89,16 +103,16 @@ fn main() -> anyhow::Result<()> {
     env::set_current_dir(file_name.trim_end_matches(".tar.xz"))?;
 
     println!("Compiling kernel...");
-    compile()?;
+    compile(&args.arch)?;
     println!("Kernel compiled successfully");
 
-    let kernel_path = "arch/x86_64/boot/bzImage"; /* FIXME: arch independent */
+    let kernel_path = format!("arch/{}/boot/bzImage", args.arch);
 
     env::set_current_dir(current_dir)?;
 
     fs::copy(
         Path::new(file_name.trim_end_matches(".tar.xz")).join(kernel_path),
-        "vmlinuz",
+        format!("vmlinuz-{}", args.arch),
     )?;
 
     fs::remove_file(file_name)?;
