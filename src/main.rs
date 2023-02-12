@@ -36,8 +36,9 @@ fn download_kernel(file_name: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn compile(arch: &str, img: &str) -> anyhow::Result<()> {
+fn compile(arch: &str, cross: Option<String>, img: &str) -> anyhow::Result<()> {
     let arch_arg = format!("ARCH={}", arch);
+    let cross_arg = cross.map(|v| format!("CROSS_COMPILE={}", v));
 
     let mut defconfig = Command::new("make");
     defconfig.arg(&arch_arg).arg("defconfig");
@@ -71,8 +72,13 @@ fn compile(arch: &str, img: &str) -> anyhow::Result<()> {
     }
 
     let mut make = Command::new("make");
-    make.arg(&arch_arg)
-        .arg(img)
+    make.arg(&arch_arg);
+
+    if let Some(cross_compile) = cross_arg {
+        make.arg(cross_compile);
+    }
+
+    make.arg(img)
         .arg("modules")
         .arg("-j".to_owned() + &num_cpus::get().to_string());
 
@@ -91,6 +97,12 @@ fn main() -> anyhow::Result<()> {
         "rpi" => "arm64",
         _ => bail!("invalid architecture (supported: x86_64 rpi)"),
     });
+
+    let cross = match args.arch.as_str() {
+        "x86_64" => None,
+        "rpi" => Some(String::from("aarch64-linux-gnu-")),
+        _ => bail!("invalid architecture (supported: x86_64 rpi)"),
+    };
 
     let img = String::from(match args.arch.as_str() {
         "x86_64" => "bzImage",
@@ -115,16 +127,16 @@ fn main() -> anyhow::Result<()> {
     env::set_current_dir(file_name.trim_end_matches(".tar.xz"))?;
 
     println!("Compiling kernel...");
-    compile(&arch, &img)?;
+    compile(&arch, cross, &img)?;
     println!("Kernel compiled successfully");
 
-    let kernel_path = format!("arch/{}/boot/bzImage", args.arch);
+    let kernel_path = format!("arch/{}/boot/bzImage", arch);
 
     env::set_current_dir(current_dir)?;
 
     fs::copy(
         Path::new(file_name.trim_end_matches(".tar.xz")).join(kernel_path),
-        format!("vmlinuz-{}", args.arch),
+        format!("vmlinuz-{}", arch),
     )?;
 
     fs::remove_file(file_name)?;
