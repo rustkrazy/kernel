@@ -131,7 +131,7 @@ fn main() -> anyhow::Result<()> {
     compile(&arch, cross, &img)?;
     println!("Kernel compiled successfully");
 
-    let kernel_path = format!("arch/{}/boot/bzImage", arch);
+    let kernel_path = format!("arch/{}/boot/{}", arch, img);
 
     env::set_current_dir(current_dir)?;
 
