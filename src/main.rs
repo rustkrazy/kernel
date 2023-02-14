@@ -1,10 +1,11 @@
 use anyhow::bail;
 use clap::Parser;
 use std::env;
+use std::ffi::OsStr;
 use std::fs::{self, File};
 use std::io::prelude::*;
 use std::path::Path;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 const LATEST: &str = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.1.tar.xz";
 
@@ -40,14 +41,14 @@ fn compile(arch: &str, cross: Option<String>, img: &str) -> anyhow::Result<()> {
     let arch_arg = format!("ARCH={}", arch);
     let cross_arg = cross.map(|v| format!("CROSS_COMPILE={}", v));
 
-    let mut defconfig = Command::new("make");
+    let mut defconfig = no_stdin("make");
     defconfig.arg(&arch_arg).arg("defconfig");
 
     if !defconfig.spawn()?.wait()?.success() {
         bail!("make defconfig failed");
     }
 
-    let mut mod2noconfig = Command::new("make");
+    let mut mod2noconfig = no_stdin("make");
     mod2noconfig.arg(&arch_arg).arg("mod2noconfig");
 
     if !mod2noconfig.spawn()?.wait()?.success() {
@@ -64,14 +65,14 @@ fn compile(arch: &str, cross: Option<String>, img: &str) -> anyhow::Result<()> {
         file.write_all(CONFIG.as_bytes())?;
     }
 
-    let mut olddefconfig = Command::new("make");
+    let mut olddefconfig = no_stdin("make");
     olddefconfig.arg(&arch_arg).arg("olddefconfig");
 
     if !olddefconfig.spawn()?.wait()?.success() {
         bail!("make olddefconfig failed");
     }
 
-    let mut make = Command::new("make");
+    let mut make = no_stdin("make");
     make.arg(&arch_arg);
 
     if let Some(cross_compile) = cross_arg {
@@ -114,7 +115,7 @@ fn main() -> anyhow::Result<()> {
 
     download_kernel(file_name)?;
 
-    let mut untar = Command::new("tar");
+    let mut untar = no_stdin("tar");
     untar.arg("xf").arg(file_name);
 
     if !untar.spawn()?.wait()?.success() {
@@ -143,4 +144,11 @@ fn main() -> anyhow::Result<()> {
     fs::remove_dir_all(file_name.trim_end_matches(".tar.xz"))?;
 
     Ok(())
+}
+
+fn no_stdin<S: AsRef<OsStr>>(program: S) -> Command {
+    let mut cmd = Command::new(program);
+    cmd.stdin(Stdio::null());
+
+    cmd
 }
