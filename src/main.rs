@@ -137,7 +137,7 @@ fn main() -> anyhow::Result<()> {
 
     fs::copy(
         Path::new(file_name.trim_end_matches(".tar.xz")).join(kernel_path),
-        format!("vmlinuz-{}", arch),
+        format!("vmlinuz-{}", args.arch),
     )?;
 
     fs::remove_file(file_name)?;
