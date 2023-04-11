@@ -953,7 +953,7 @@ fn main() -> anyhow::Result<()> {
         format!("vmlinuz-{}", args.arch),
     )?;
 
-    if arch == "rpi" {
+    if args.arch.as_str() == "rpi" {
         copy_file(
             file_name,
             "arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb",
