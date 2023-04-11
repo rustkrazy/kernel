@@ -3,7 +3,7 @@ use clap::Parser;
 use std::env;
 use std::ffi::OsStr;
 use std::fs::{self, File};
-use std::io::prelude::*;
+use std::io::{self, prelude::*};
 use std::path::Path;
 use std::process::{Command, Stdio};
 
@@ -887,8 +887,13 @@ fn compile(arch: &str, cross: Option<String>, img: &str) -> anyhow::Result<()> {
         make.arg(cross_compile);
     }
 
-    make.arg(img)
-        .arg("modules")
+    make.arg(img);
+
+    if arch == "rpi" {
+        make.arg(dtbs);
+    }
+
+    make.arg("modules")
         .arg("-j".to_owned() + &num_cpus::get().to_string());
 
     if !make.spawn()?.wait()?.success() {
@@ -948,6 +953,29 @@ fn main() -> anyhow::Result<()> {
         format!("vmlinuz-{}", args.arch),
     )?;
 
+    if arch == "rpi" {
+        copy_file(
+            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb",
+            "bcm2710-rpi-3-b.dtb",
+        )?;
+        copy_file(
+            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b-plus.dtb",
+            "bcm2710-rpi-3-b-plus.dtb",
+        )?;
+        copy_file(
+            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-cm3-io3.dtb",
+            "bcm2710-rpi-cm3.dtb",
+        )?;
+        copy_file(
+            "arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb",
+            "bcm2711-rpi-4-b.dtb",
+        )?;
+        copy_file(
+            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-zero-2-w.dtb",
+            "bcm2710-rpi-zero-2-w.dtb",
+        )?;
+    }
+
     fs::remove_file(file_name)?;
     fs::remove_dir_all(file_name.trim_end_matches(".tar.xz"))?;
 
@@ -959,4 +987,8 @@ fn no_stdin<S: AsRef<OsStr>>(program: S) -> Command {
     cmd.stdin(Stdio::null());
 
     cmd
+}
+
+fn copy_file<T: AsRef<Path>>(base: &Path, path: &str, to: T) -> io::Result<()> {
+    fs::copy(Path::new(base.trim_end_matches(".tar.xz")).join(path), to)
 }
