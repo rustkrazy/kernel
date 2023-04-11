@@ -890,7 +890,7 @@ fn compile(arch: &str, cross: Option<String>, img: &str) -> anyhow::Result<()> {
     make.arg(img);
 
     if arch == "rpi" {
-        make.arg(dtbs);
+        make.arg("dtbs");
     }
 
     make.arg("modules")
@@ -955,22 +955,27 @@ fn main() -> anyhow::Result<()> {
 
     if arch == "rpi" {
         copy_file(
+            file_name,
             "arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb",
             "bcm2710-rpi-3-b.dtb",
         )?;
         copy_file(
+            file_name,
             "arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b-plus.dtb",
             "bcm2710-rpi-3-b-plus.dtb",
         )?;
         copy_file(
+            file_name,
             "arch/arm64/boot/dts/broadcom/bcm2837-rpi-cm3-io3.dtb",
             "bcm2710-rpi-cm3.dtb",
         )?;
         copy_file(
+            file_name,
             "arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb",
             "bcm2711-rpi-4-b.dtb",
         )?;
         copy_file(
+            file_name,
             "arch/arm64/boot/dts/broadcom/bcm2837-rpi-zero-2-w.dtb",
             "bcm2710-rpi-zero-2-w.dtb",
         )?;
@@ -989,6 +994,6 @@ fn no_stdin<S: AsRef<OsStr>>(program: S) -> Command {
     cmd
 }
 
-fn copy_file<T: AsRef<Path>>(base: &Path, path: &str, to: T) -> io::Result<()> {
+fn copy_file<T: AsRef<Path>>(base: &str, path: &str, to: T) -> io::Result<u64> {
     fs::copy(Path::new(base.trim_end_matches(".tar.xz")).join(path), to)
 }
