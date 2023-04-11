@@ -889,7 +889,8 @@ fn compile(arch: &str, cross: Option<String>, img: &str) -> anyhow::Result<()> {
 
     make.arg(img);
 
-    if arch == "rpi" {
+    // raspberry pi
+    if arch == "arm64" {
         make.arg("dtbs");
     }
 
