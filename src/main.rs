@@ -956,27 +956,27 @@ fn main() -> anyhow::Result<()> {
     if args.arch.as_str() == "rpi" {
         copy_file(
             file_name,
-            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dts",
+            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb",
             "bcm2710-rpi-3-b.dtb",
         )?;
         copy_file(
             file_name,
-            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b-plus.dts",
+            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b-plus.dtb",
             "bcm2710-rpi-3-b-plus.dtb",
         )?;
         copy_file(
             file_name,
-            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-cm3-io3.dts",
+            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-cm3-io3.dtb",
             "bcm2710-rpi-cm3.dtb",
         )?;
         copy_file(
             file_name,
-            "arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dts",
+            "arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb",
             "bcm2711-rpi-4-b.dtb",
         )?;
         copy_file(
             file_name,
-            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-zero-2-w.dts",
+            "arch/arm64/boot/dts/broadcom/bcm2837-rpi-zero-2-w.dtb",
             "bcm2710-rpi-zero-2-w.dtb",
         )?;
     }
