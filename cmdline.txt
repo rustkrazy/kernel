@@ -1,1 +1,1 @@
-root=PARTUUID=00000000-02 init=/bin/init
+root=PARTUUID=00000000-02 init=/bin/init rootwait console=tty1
