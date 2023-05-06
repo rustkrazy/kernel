@@ -11,7 +11,7 @@ const LATEST: &str = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.2.7.t
 
 const CONFIG: &str = r#"
 CONFIG_ARCH_BCM2835=y
-CONFIG-HW_RANDOM_BCM2835=y
+CONFIG_HW_RANDOM_BCM2835=y
 CONFIG_DMA_BCM2835=y
 CONFIG_I2C_BCM2835=y
 CONFIG_SPI_BCM2835=y
