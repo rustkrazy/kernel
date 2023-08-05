@@ -7,7 +7,7 @@ use std::io::{self, prelude::*};
 use std::path::Path;
 use std::process::{Command, Stdio};
 
-const LATEST: &str = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.3.1.tar.xz";
+const LATEST: &str = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.4.8.tar.xz";
 
 const CONFIG: &str = r#"
 CONFIG_ARCH_BCM2835=y
@@ -49,6 +49,9 @@ CONFIG_USB_NET_DRIVERS=y
 CONFIG_USB_RTL8150=y
 CONFIG_USB_RTL8152=y
 CONFIG_NETFILTER_NETLINK_QUEUE=y
+CONFIG_NET_IP_TUNNEL=y
+CONFIG_INET_TUNNEL=y
+CONFIG_INET6_TUNNEL=y
 CONFIG_IPV6=y
 CONFIG_IPV6_SIT=y
 CONFIG_VLAN_8021Q=y
@@ -112,6 +115,7 @@ CONFIG_NFT_SOCKET=y
 CONFIG_NFT_REJECT_NETDEV=y
 CONFIG_NFT_REJECT_IPV4=y
 CONFIG_NFT_REJECT_IPV6=y
+CONFIG_NFT_TUNNEL=y
 
 # TODO: trim the settings below to the minimum set that works (taken from debian)
 ##
