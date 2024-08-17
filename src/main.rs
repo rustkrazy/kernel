@@ -116,6 +116,8 @@ CONFIG_NFT_SOCKET=y
 CONFIG_NFT_REJECT_NETDEV=y
 CONFIG_NFT_REJECT_IPV4=y
 CONFIG_NFT_REJECT_IPV6=y
+CONFIG_NET_UDP_TUNNEL=y
+CONFIG_WIREGUARD=y
 
 # TODO: trim the settings below to the minimum set that works (taken from debian)
 ##
