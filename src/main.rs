@@ -7,7 +7,7 @@ use std::io::{self, prelude::*};
 use std::path::Path;
 use std::process::{Command, Stdio};
 
-const LATEST: &str = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.15.3.tar.xz";
+const LATEST: &str = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.15.4.tar.xz";
 
 const CONFIG: &str = r#"
 CONFIG_ARCH_BCM2835=y
